@@ -13,7 +13,7 @@ This project experiments with GCP Secret Manager.  Some secrets that are held by
 
 
 ## Assumptions
-There is a billing-enabled project, with a service account, in GCP.  The project has the Cloud Build, Cloud Functions and Secret Manager APIs enabled.  The $GOOGLE_APPLICATION_CREDENTIALS and $GOOGLE_REGION environment variables have been exported, respectively containing the (relative or absolute) path to the service account's JSON key file and a desired region.  Logged in as an owner, execute
+There is a billing-enabled project, with a service account, in GCP.  The project has the Cloud Build, Cloud Functions and Secret Manager APIs enabled.  The $GOOGLE_APPLICATION_CREDENTIALS and $GOOGLE_REGION environment variables have been exported, respectively, containing the (relative or absolute) path to the service account's JSON key file and a desired region.  Logged in as an owner, execute
 
     source checker.sh; check.sh
 
@@ -127,7 +127,6 @@ See *secret-accessor/index.js* and *secret-accessor/.gcloudignore*.
         --role=roles/storage.objectCreator
 
 ### Create and Enrole a Secret-Accessing Service Account
-The service account name and display name are derived from the subsequently specified role.  (Note: in this project, the name and the source of the cloud function are also derived from the role; in the index, the name of the exported function is derived from the name of the client method that is used.)
 
     gcloud iam service-accounts create secret-accessor\
         --display-name=Secret_Accessor\
