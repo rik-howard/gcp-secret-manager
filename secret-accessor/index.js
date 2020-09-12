@@ -6,7 +6,7 @@
 let {SecretManagerServiceClient} = require ('@google-cloud/secret-manager');
 let client = new SecretManagerServiceClient ();
 
-exports.secretAccessor = async function (request, response) {
+exports.secretVersionAccession = async function (request, response) {
     let projectNumber = process.env.PROJECT_NUMBER;
     let secretName = request.query.secretName || request.body.secretName;
     let secretVersion = request.query.secretVersion || request.body.secretVersion;

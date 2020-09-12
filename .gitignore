@@ -1,6 +1,3 @@
 
 node_modules
 iam-policy.json
-service-account.json
-package-lock.json
-package.json

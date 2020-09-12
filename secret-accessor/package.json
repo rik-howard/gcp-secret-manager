@@ -1,0 +1,27 @@
+{
+    "name": "secret-accessor",
+    "version": "0.0.0",
+    "description": "This cloud-function index accesses a secret version.",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/rik-howard/gcp-secret-manager.git"
+    },
+    "keywords": [
+        "GSM",
+        "NodeJS",
+        "CloudFunctions"
+    ],
+    "author": "Rik",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/rik-howard/gcp-secret-manager/issues"
+    },
+    "homepage": "https://github.com/rik-howard/gcp-secret-manager#readme",
+    "dependencies": {
+        "@google-cloud/secret-manager": "^3.1.0"
+    }
+}

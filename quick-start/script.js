@@ -1,49 +1,52 @@
 
-// Import the Secret Manager client and instantiate it:
 let {SecretManagerServiceClient} = require ('@google-cloud/secret-manager');
 let client = new SecretManagerServiceClient ();
 
-/**
- * To-do (developer): uncomment these variables before running the sample.
- */
-let projectId = `projects/${process.env.GOOGLE_PROJECT}`;  // Project for which to manage secrets.
-let secretId  = 'third-secret';                       // Secret ID.
-let secretEgo = 'third secret, first version';        // String source data.
+let projectId   = process.argv [2];
+let secretName  = 'third-secret';
+let secretValue = 'third secret, first version';
 
 async function createAndAccessSecret () {
 
     // Create the secret with automation replication.
     let [secret] = await client.createSecret ({
-        parent: projectId,
+        parent: `projects/${projectId}`,
         secret: {
-            name: secretId,
+            name: secretName,
             replication: {
-                automatic: {},
-            },
+                automatic: {}
+            }
         },
-        secretId,
+        secretId: secretName
     });
 
     console.info (`Created secret ${secret.name}`);
 
-    // Add a version with a secretEgo onto the secret.
+    // Add a version with a payload onto the secret.
     let [version] = await client.addSecretVersion ({
         parent: secret.name,
         payload: {
-            data: Buffer.from (secretEgo, 'utf8'),
+            data: Buffer.from (secretValue, 'utf8'),
         },
     });
 
-    console.info(`Added secret version ${version.name}`);
+    console.info (`Added secret version ${version.name}`);
 
     // Access the secret.
     let [accessResponse] = await client.accessSecretVersion ({
-        name: version.name,
+        name: version.name
     });
 
     let responsePayload = accessResponse.payload.data.toString ('utf8');
 
-    console.info(`Payload: ${responsePayload}`);
+    console.info (`Payload: ${responsePayload}`);
+
+    // Delete the secret.
+    let deletionResponses = await client.deleteSecret ({
+        name: secret.name
+    });
+
+    console.log (`Deletion Response: ${JSON.stringify (deletionResponses)}`);
 
 }
 
