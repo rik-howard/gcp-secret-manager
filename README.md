@@ -71,11 +71,11 @@ See *quick-start.js*.
     npm install --save @google-cloud/secret-manager  # puts in this folder 🤮
     export GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_CREDENTIALS
 
-    node quick-start.js
-
     gcloud projects add-iam-policy-binding $GOOGLE_PROJECT\
         --member=serviceAccount:$(gcloud_project_service_account_email)\
         --role=roles/secretmanager.admin
+
+    node quick-start.js
 
     gcloud secrets delete third-secret --quiet
 
@@ -124,6 +124,8 @@ Then
     export DATA='{"secretName": "second-secret", "secretVersion": 1}'
     export DATA='{"secretName": "second-secret", "secretVersion": 2}'
     export DATA='{"secretName": "second-secret", "secretVersion": "latest"}'
+
+(Incidentally, Google's recommendation is not to use *latest* in production.)
 
     gcloud functions call secret-accessor --data="$DATA" --region=$GOOGLE_REGION
 
