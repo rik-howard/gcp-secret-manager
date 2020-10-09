@@ -3,9 +3,10 @@
 echo
 echo "Tools"
 echo
+echo "    bash  : $(bash   --version | head -1)"
 echo "    gcloud: $(gcloud --version | head -1)"
-echo "    node  : $(node --version)"
-echo "    jq    : $(jq --version)"
+echo "    node  : $(node   --version)"
+echo "    jq    : $(jq     --version)"
 echo
 
 echo
