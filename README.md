@@ -4,12 +4,12 @@
 # GCP Secret Manager
 This project experiments with GCP Secret Manager.  Some secrets that are held by the manger are manipulated from a local command line and from a Cloud Function.  GCloud, Node and JQ are used to manage the APIs, IAMs, GCF and GSM.
 
-* ≡: Top: APIs and Services: Dashboard
-* ≡: Top: IAM and Admin: IAM
-* ≡: Top: IAM and Admin: Service Accounts
-* ≡: Top: Security: Secret Manager
-* ≡: Tools: Cloud Build: Dashboard
-* ≡: Compute: Cloud Functions
+> ≡ Top: APIs and Services: Dashboard<br/>
+  ≡ Top: IAM and Admin: IAM<br/>
+  ≡ Top: IAM and Admin: Service Accounts<br/>
+  ≡ Top: Security: Secret Manager<br/>
+  ≡ Tools: Cloud Build: Dashboard<br/>
+  ≡ Compute: Cloud Functions
 
 
 ## Assumptions
@@ -21,6 +21,7 @@ It should look something like this (where gac abbreviates Google application cre
 
     Tools
 
+        bash  : GNU bash, version 4.4.20(1)-release (x86_64-pc-linux-gnu)
         gcloud: Google Cloud SDK 309.0.0
         node  : v12.16.3
         jq    : jq-1.6
@@ -99,100 +100,16 @@ Access the secrets again.
 
 
 ## Node
-See *quick-start/script.js*.
+See
 
-### Install the Dependencies
-
-    npm install --prefix quick-start @google-cloud/secret-manager
-
-### Enrole the Service Account as a Secret Manager Admin
-
-    gcloud projects add-iam-policy-binding $(gac_project_id)\
-        --member=serviceAccount:$(gac_client_email)\
-        --role=roles/secretmanager.admin
-
-### Execute the script
-This executes as the service account specified by GOOGLE_APPLICATION_CREDENTIALS, to which the admin role has just been bound.
-
-    node quick-start/script.js $(gac_project_id)
+* [Quick Start](quick-start)
 
 
 ## Cloud Function
-See *secret-accessor/index.js* and *secret-accessor/.gcloudignore*.
+See
 
-### Enhance the Cloud Function System Service Account
+* [Secret Accessor](secret-accessor)
 
-    gcloud projects add-iam-policy-binding $(gac_project_id)\
-        --member=serviceAccount:service-$(gcp_project_number)@gcf-admin-robot.iam.gserviceaccount.com\
-        --role=roles/storage.objectCreator
 
-### Create and Enrole a Secret-Accessing Service Account
-
-    gcloud iam service-accounts create secret-accessor\
-        --display-name=Secret_Accessor\
-        --project=$(gac_project_id)
-
-    gcloud projects add-iam-policy-binding $(gac_project_id)\
-        --member=serviceAccount:secret-accessor@$(gac_email_suffix)\
-        --role=roles/secretmanager.secretAccessor
-
-### Install the Dependencies
-
-    npm install --prefix secret-accessor @google-cloud/secret-manager
-
-### Deploy the Cloud Function
-
-    gcloud functions deploy secret-accessor\
-        --set-env-vars=PROJECT_NUMBER=$(gcp_project_number)\
-        --service-account=secret-accessor@$(gac_email_suffix)\
-        --entry-point=secretVersionAccession\
-        --source=secret-accessor\
-        --allow-unauthenticated\
-        --region=$GOOGLE_REGION\
-        --runtime=nodejs12\
-        --trigger-http
-
-### Exercise the Cloud Function
-This uses GCloud to exercise with some posted name-value pairs.
-
-    export DATA='{"secretName": "first-secret", "secretVersion": 1}'
-    gcloud functions call secret-accessor --data="$DATA" --region=$GOOGLE_REGION
-
-This is for a browser to exercise with some query name-value pairs.
-
-    export GCF_HOST="${GOOGLE_REGION}-$(gac_project_id).cloudfunctions.net"
-    export GCF_NAME="secret-accessor"
-    export GCF_QUERY="secretName=second-secret&secretVersion=1"
-    echo "https://$GCF_HOST/$GCF_NAME?$GCF_QUERY"
-
-### Restrict the Secret-Accessing Service Account to a Single Secret
-Get the IAM policy from GCP.
-
-    gcloud projects get-iam-policy $(gac_project_id) --format=json > iam-policy.json
-
-In *iam-policy.json*, update the binding for the secret accessor role with a condition.
-
-    "condition" : {
-        "title": "second-secret-conditon",
-        "description": "This should limit the SA to only accessing the second secret.",
-        "expression": "resource.name.startsWith('projects/$(gcp_project_number)/secrets/second-secret')"
-    },
-
-    sed -i -r -e "s/..gcp_project_number./$(gcp_project_number)/" iam-policy.json
-
-Set the IAM policy to GCP.
-
-    gcloud projects set-iam-policy $GOOGLE_PROJECT iam-policy.json
-
-### Exercise the Cloud Function Again
-This will fail now, although sometimes the condition may take a few minutes to propagate.
-
-    export DATA='{"secretName": "first-secret", "secretVersion": 1}'
-    gcloud functions call secret-accessor --data="$DATA" --region=$GOOGLE_REGION
-
-These succeed.
-
-    export DATA='{"secretName": "second-secret", "secretVersion": 1}'
-    export DATA='{"secretName": "second-secret", "secretVersion": 2}'
-    export DATA='{"secretName": "second-secret", "secretVersion": "latest"}'
-    gcloud functions call secret-accessor --data="$DATA" --region=$GOOGLE_REGION
+## References
+* https://cloud.google.com/secret-manager/docs
